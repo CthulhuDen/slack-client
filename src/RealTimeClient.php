@@ -41,6 +41,11 @@ class RealTimeClient extends ApiClient
     protected $team;
 
     /**
+     * @var string ID of the user logged in
+     */
+    protected $authedId;
+
+    /**
      * @var array A map of users.
      */
     protected $users = [];
@@ -84,6 +89,7 @@ class RealTimeClient extends ApiClient
             $this->team = new Team($this, $responseData['team']);
 
             // Populate self user.
+            $this->authedId = $responseData['self']['id'];
             $this->users[$responseData['self']['id']] = new User($this, $responseData['self']);
 
             // populate list of users
@@ -157,6 +163,14 @@ class RealTimeClient extends ApiClient
 
         $this->websocket->close();
         $this->connected = false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuthedUser()
+    {
+        return $this->getUserById($this->authedId);
     }
 
     /**
@@ -455,7 +469,7 @@ class RealTimeClient extends ApiClient
 
                     // Resolve or reject the promise that was waiting for the reply.
                     if (isset($payload['ok']) && $payload['ok'] === true) {
-                        $deferred->resolve();
+                        $deferred->resolve($payload);
                     } else {
                         $deferred->reject($payload['error']);
                     }
