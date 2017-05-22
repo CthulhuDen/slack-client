@@ -394,7 +394,11 @@ class ApiClient
 
         // Add requests to the event loop to be handled at a later date.
         $this->loop->futureTick(function () use ($promise) {
-            $promise->wait();
+            try {
+                $promise->wait();
+            } catch (\Exception $e) {
+                $promise->reject($e);
+            }
         });
 
         // When the response has arrived, parse it and resolve. Note that our
@@ -414,6 +418,8 @@ class ApiClient
                 $niceMessage = ucfirst(str_replace('_', ' ', $payload['error']));
                 $deferred->reject(new ApiException($niceMessage));
             }
+        }, function ($reason) use ($deferred) {
+            $deferred->reject($reason);
         });
 
         return $deferred->promise();
