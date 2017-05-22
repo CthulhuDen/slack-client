@@ -1,15 +1,18 @@
 # PHP Slack API Client
-[![Build](https://img.shields.io/scrutinizer/build/g/coderstephen/slack-client.svg)](https://scrutinizer-ci.com/g/coderstephen/slack-client)
+[![Build](https://img.shields.io/scrutinizer/build/g/sagebind/slack-client.svg)](https://scrutinizer-ci.com/g/sagebind/slack-client)
 [![Version](https://img.shields.io/packagist/v/coderstephen/slack-client.svg)](https://packagist.org/packages/coderstephen/slack-client)
 [![License](https://img.shields.io/packagist/l/coderstephen/slack-client.svg)](https://packagist.org/packages/coderstephen/slack-client)
-[![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/coderstephen/slack-client.svg)](https://scrutinizer-ci.com/g/coderstephen/slack-client)
-[![Code Quality](https://img.shields.io/scrutinizer/g/coderstephen/slack-client.svg)](https://scrutinizer-ci.com/g/coderstephen/slack-client)
+[![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/sagebind/slack-client.svg)](https://scrutinizer-ci.com/g/sagebind/slack-client)
+[![Code Quality](https://img.shields.io/scrutinizer/g/sagebind/slack-client.svg)](https://scrutinizer-ci.com/g/sagebind/slack-client)
 [![Downloads](https://img.shields.io/packagist/dt/coderstephen/slack-client.svg)](https://packagist.org/packages/coderstephen/slack-client)
 
 This is an API client for [Slack](http://slack.com) for PHP clients, with support for the [Real Time Messaging API](http://api.slack.com/rtm) (RTM API) using web sockets.
 
+## Project status
+This project is based on some outdated and unmaintained libraries, and itself is not being actively maintained.
+
 ## Overview
-This library was created primarily for [Slackyboy](https://github.com/coderstephen/slackyboy), but was branched off into its own codebase so it could be used in other projects as well. I created this client because existing clients were either too complicated to use, or buggy, or incomplete. This is also the first PHP client I am aware of to support Slack's RTM API.
+This library was created primarily for [Slackyboy](https://github.com/sagebind/slackyboy), but was branched off into its own codebase so it could be used in other projects as well. I created this client because existing clients were either too complicated to use, or buggy, or incomplete. This is also the first PHP client I am aware of to support Slack's RTM API.
 
 ## Installation
 Install with [Composer](http://getcomposer.org), obviously:
@@ -53,23 +56,27 @@ $client->getChannelById('C025YTX9D')->then(function (\Slack\Channel $channel) us
 Slack supports messages much more rich than plain text through attachments. The easiest way to create a custom message is with a `MessageBuilder`:
 
 ```php
-use Slack\Message\{Attachment, AttachmentField};
+use Slack\Message\{Attachment, AttachmentBuilder, AttachmentField};
 
 $message = $client->getMessageBuilder()
     ->setText('Hello, all!')
     ->setChannel($someChannelObject)
     ->addAttachment(new Attachment('My Attachment', 'attachment text'))
-    ->addAttachment(new Attachment('Build Status', 'Build failed! :/', 'build failed', 'danger')))
-    ->addAttachment(new Attachment('Some Fields', 'fields', null, '#BADA55', [
-        new AttachmentField('Title1', 'Text', false),
-        new AttachmentField('Title2', 'Some other text', true)
+    ->addAttachment(new Attachment('Build Status', 'Build failed! :/', 'build failed', 'danger'))
+    ->addAttachment(new AttachmentBuilder()
+        ->setTitle('Some Fields')
+        ->setText('fields')
+        ->setColor('#BADA55')
+        ->addField(new AttachmentField('Title1', 'Text', false))
+        ->addField(new AttachmentField('Title2', 'Some other text', true))
+        ->create()
     ]))
     ->create();
 
 $client->postMessage($message);
 ```
 
-Check the [API documentation](http://coderstephen.github.io/slack-client/api) for a list of all methods and properties that messages, attachments, and fields support.
+Check the [API documentation](http://sagebind.github.io/slack-client/api) for a list of all methods and properties that messages, attachments, and fields support.
 
 
 ### Asynchronous requests and promises
@@ -118,7 +125,7 @@ $loop->run();
 See the [Slack API documentation](http://api.slack.com/events) for a list of possible events.
 
 ## Documentation
-You can view the complete API documentation [here](http://coderstephen.github.io/slack-client/api).
+You can view the complete API documentation [here](http://sagebind.github.io/slack-client/api).
 
 ## Running tests
 You can run automated unit tests using [PHPUnit](http://phpunit.de) after installing dependencies:
