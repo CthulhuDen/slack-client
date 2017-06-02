@@ -392,15 +392,6 @@ class ApiClient
             'form_params' => $args,
         ]);
 
-        // Add requests to the event loop to be handled at a later date.
-        $this->loop->futureTick(function () use ($promise) {
-            try {
-                $promise->wait();
-            } catch (\Exception $e) {
-                $promise->reject($e);
-            }
-        });
-
         // When the response has arrived, parse it and resolve. Note that our
         // promises aren't pretty; Guzzle promises are not compatible with React
         // promises, so the only Guzzle promises ever used die in here and it is
